@@ -16,6 +16,21 @@ const routes = [{
         path: '/panel',
         component: () =>
             import ('./../components/panel')
+    },
+    {
+        path: '/axios',
+        component: () =>
+            import ('./../components/axios')
+    },
+    {
+        path: '/save',
+        component: () =>
+            import ('./../components/save')
+    },
+    {
+        path: '/event',
+        component: () =>
+            import ('./../components/event')
     }
 ]
 

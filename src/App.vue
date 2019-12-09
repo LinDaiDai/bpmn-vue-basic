@@ -18,7 +18,10 @@ export default {
       links: [
         { to: '/basic', title: '基本使用' },
         { to: '/provider', title: '引入左侧工具栏以及节点' },
-        { to: '/panel', title: '引入左侧工具栏和右侧属性栏' }
+        { to: '/panel', title: '引入左侧工具栏和右侧属性栏' },
+        { to: '/axios', title: '通过网络请求获取bpmn并渲染' },
+        { to: '/save', title: '保存bpmn并发送给后台' },
+        { to: '/event', title: '绑定event事件' }
       ]
     }
   }
