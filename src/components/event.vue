@@ -90,8 +90,8 @@ export default {
             let res = await axios({
                 method: 'get',
                 timeout: 120000,
-                url: that.xmlUrl
-                // headers: { 'Content-Type': 'multipart/form-data' }
+                url: that.xmlUrl,
+                headers: { 'Content-Type': 'multipart/form-data' }
             })
             console.log(res)
             bpmnXmlStr = res['data']
@@ -115,6 +115,7 @@ export default {
         console.log('创建成功!')
         this.addBpmnListener()
         this.addModelerListener()
+        this.addEventBusListener()
     },
     // 添加绑定事件
     addBpmnListener () {
@@ -136,15 +137,64 @@ export default {
       // 监听 modeler
       const bpmnjs = this.bpmnModeler
       const that = this
-      const events = ['shape.added', 'shape.move.end', 'shape.removed', 'connect.end', 'connect.move']
+      // 'shape.removed', 'connect.end', 'connect.move'
+      const events = ['shape.added', 'shape.move.end', 'shape.removed']
       events.forEach(function(event) {
         that.bpmnModeler.on(event, e => {
-          console.log(event, e)
           var elementRegistry = bpmnjs.get('elementRegistry')
           var shape = e.element ? elementRegistry.get(e.element.id) : e.shape
-          console.log(shape)
+          // console.log(shape)
+          if (event === 'shape.added') {
+            console.log('新增了shape')
+          } else if (event === 'shape.move.end') {
+            console.log('移动了shape')
+          } else if (event === 'shape.removed') {
+            console.log('删除了shape')
+          }
         })
       })
+    },
+    addEventBusListener() {
+      // 监听 element
+      let that = this
+      const eventBus = this.bpmnModeler.get('eventBus')
+      const eventTypes = ['element.click', 'element.changed']
+      eventTypes.forEach(function(eventType) {
+        eventBus.on(eventType, function(e) {
+          if (!e || e.element.type == 'bpmn:Process') return
+          if (eventType === 'element.changed') {
+            that.elementChanged(e)
+          } else if (eventType === 'element.click') {
+            console.log('点击了element')
+          }
+        })
+      })
+    },
+    isInvalid (param) { // 判断是否是无效的值
+      return param === null || param === undefined || param === ''
+    },
+    isSequenceFlow (type) { // 判断是否是线
+      return type === 'bpmn:SequenceFlow'
+    },
+    elementChanged(e) {
+      var shape = this.getShape(e.element.id)
+      console.log(shape)
+      if (!shape) {
+        // 若是shape为null则表示删除, 无论是shape还是connect删除都调用此处
+        console.log('无效的shape')
+        // 上面已经用 shape.removed 检测了shape的删除, 要是删除shape的话这里还会被再触发一次
+        console.log('删除了shape和connect')
+        return
+      }
+      if (!this.isInvalid(shape.type)) {
+        if (this.isSequenceFlow(shape.type)) {
+          console.log('改变了线')
+        }
+      }
+    },
+    getShape(id) {
+      var elementRegistry = this.bpmnModeler.get('elementRegistry')
+      return elementRegistry.get(id)
     },
     // 下载为SVG格式,done是个函数，调用的时候传入的
     saveSVG(done) {
