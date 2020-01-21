@@ -2,7 +2,13 @@
 
 ## 项目描述
 
-此项目为[《全网最详bpmn.js教材-http请求篇》](https://juejin.im/post/5def468c6fb9a01622778a03)中的教材案例.
+此项目为以下章节中的教材案例.
+
+- [《基础篇》](https://github.com/LinDaiDai/bpmn-chinese-document/tree/master/LinDaiDai/全网最详bpmn.js教材-基础篇.md)🔥🔥
+
+- [《http请求篇》](https://github.com/LinDaiDai/bpmn-chinese-document/tree/master/LinDaiDai/全网最详bpmn.js教材-http请求篇.md)🔥🔥
+
+- [《事件篇》](https://github.com/LinDaiDai/bpmn-chinese-document/tree/master/LinDaiDai/全网最详bpmn.js教材-事件篇.md)🔥🔥🔥
 
 项目截图:
 

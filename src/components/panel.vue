@@ -11,7 +11,7 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler'
 import propertiesPanelModule from 'bpmn-js-properties-panel'
 import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda'
-// import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
+import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
 import { xmlStr } from '../mock/xmlStr'
 export default {
   name: '',
@@ -51,7 +51,7 @@ export default {
           propertiesPanelModule
         ],
         moddleExtensions: {
-          // camunda: camundaModdleDescriptor
+          camunda: camundaModdleDescriptor
         }
       })
       this.createNewDiagram()
@@ -70,6 +70,28 @@ export default {
     },
     success () {
         // console.log('创建成功!')
+        this.addEventBusListener()
+    },
+    addEventBusListener() {
+      // 监听 element
+      let that = this
+      const eventBus = this.bpmnModeler.get('eventBus')
+      const eventTypes = ['element.click', 'element.changed', 'element.updateLabel']
+      eventTypes.forEach(function(eventType) {
+        eventBus.on(eventType, function(e) {
+          console.log(eventType)
+          if (!e || e.element.type == 'bpmn:Process') return
+          if (eventType === 'element.changed') {
+            // that.elementChanged(e)
+          } else if (eventType === 'element.click') {
+            console.log('点击了element', e)
+            // if (e.element.type === 'bpmn:Task') {
+            // }
+          } else if (eventType === 'element.updateLabel') {
+            console.log('element.updateLabel', e.element)
+          }
+        })
+      })
     }
   },
 // 计算属性

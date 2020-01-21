@@ -158,14 +158,25 @@ export default {
       // 监听 element
       let that = this
       const eventBus = this.bpmnModeler.get('eventBus')
+      const modeling = this.bpmnModeler.get('modeling')
+      const elementRegistry = this.bpmnModeler.get('elementRegistry')
       const eventTypes = ['element.click', 'element.changed']
       eventTypes.forEach(function(eventType) {
         eventBus.on(eventType, function(e) {
+          console.log(e)
           if (!e || e.element.type == 'bpmn:Process') return
           if (eventType === 'element.changed') {
             that.elementChanged(e)
           } else if (eventType === 'element.click') {
             console.log('点击了element')
+            var shape = e.element ? elementRegistry.get(e.element.id) : e.shape
+            if (shape.type === 'bpmn:StartEvent') {
+              modeling.updateProperties(shape, {
+                name: '我是修改后的虚线节点',
+                isInterrupting: false,
+                customText: '我是自定义的text属性'
+              })
+            }
           }
         })
       })
