@@ -1,11 +1,11 @@
 <template>
   <div class="containers">
     <div class="loading" v-if="loading">
-        Loading...
+      Loading...
     </div>
     <template v-else>
-        <div class="canvas" ref="canvas"></div>
-        <div id="js-properties-panel" class="panel"></div>
+      <div class="canvas" ref="canvas"></div>
+      <div id="js-properties-panel" class="panel"></div>
     </template>
   </div>
 </template>
@@ -19,80 +19,80 @@ import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camu
 export default {
   name: '',
   components: {},
-// 生命周期 - 创建完成（可以访问当前this实例）
+  // 生命周期 - 创建完成（可以访问当前this实例）
   created() {},
-// 生命周期 - 载入后, Vue 实例挂载到实际的 DOM 操作完成，一般在该过程进行 Ajax 交互
+  // 生命周期 - 载入后, Vue 实例挂载到实际的 DOM 操作完成，一般在该过程进行 Ajax 交互
   mounted() {
     this.init()
   },
   data() {
     return {
-        // bpmn建模器
-        bpmnModeler: null,
-        container: null,
-        canvas: null,
-        loading: true,
-        xmlUrl: '',
-        defaultXmlStr: xmlStr
+      // bpmn建模器
+      bpmnModeler: null,
+      container: null,
+      canvas: null,
+      loading: true,
+      xmlUrl: '',
+      defaultXmlStr: xmlStr
     }
   },
-// 方法集合
+  // 方法集合
   methods: {
-    async init () {
-        this.loading = true
-        this.xmlUrl = await this.getXmlUrl()
-        console.log(this.xmlUrl)
-        this.loading = false
-        this.$nextTick(() => {
-            this.initBpmn()
-        })
+    async init() {
+      this.loading = true
+      this.xmlUrl = await this.getXmlUrl()
+      console.log(this.xmlUrl)
+      this.loading = false
+      this.$nextTick(() => {
+        this.initBpmn()
+      })
     },
-    getXmlUrl () {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                const url = 'https://hexo-blog-1256114407.cos.ap-shenzhen-fsi.myqcloud.com/bpmnMock.bpmn'
-                resolve(url)
-            }, 1000)
-        })
+    getXmlUrl() {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          const url = 'https://hexo-blog-1256114407.cos.ap-shenzhen-fsi.myqcloud.com/bpmnMock.bpmn'
+          resolve(url)
+        }, 1000)
+      })
     },
-    initBpmn () {
-        // 获取到属性ref为“canvas”的dom节点
-        const canvas = this.$refs.canvas
-        // 建模
-        this.bpmnModeler = new BpmnModeler({
+    initBpmn() {
+      // 获取到属性ref为“canvas”的dom节点
+      const canvas = this.$refs.canvas
+      // 建模
+      this.bpmnModeler = new BpmnModeler({
         container: canvas,
         //添加控制板
         propertiesPanel: {
-            parent: '#js-properties-panel'
+          parent: '#js-properties-panel'
         },
         additionalModules: [
-            // 左边工具栏以及节点
-            propertiesProviderModule
+          // 左边工具栏以及节点
+          propertiesProviderModule
         ]
+      })
+      this.createNewDiagram()
+    },
+    async createNewDiagram() {
+      const that = this
+      let bpmnXmlStr = ''
+      if (this.xmlUrl === '') {
+        bpmnXmlStr = this.defaultXmlStr
+        this.transformCanvas(bpmnXmlStr)
+      } else {
+        let res = await axios({
+          method: 'get',
+          timeout: 120000,
+          url: that.xmlUrl,
+          headers: { 'Content-Type': 'multipart/form-data' }
         })
-        this.createNewDiagram()
-	},
-    async createNewDiagram () {
-        const that = this
-        let bpmnXmlStr = ''
-        if (this.xmlUrl === '') {
-            bpmnXmlStr = this.defaultXmlStr
-            this.transformCanvas(bpmnXmlStr)
-        } else {
-            let res = await axios({
-                method: 'get',
-                timeout: 120000,
-                url: that.xmlUrl,
-                headers: { 'Content-Type': 'multipart/form-data' }
-            })
-            console.log(res)
-            bpmnXmlStr = res['data']
-            this.transformCanvas(bpmnXmlStr)
-        }
+        console.log(res)
+        bpmnXmlStr = res['data']
+        this.transformCanvas(bpmnXmlStr)
+      }
     },
     transformCanvas(bpmnXmlStr) {
       // 将字符串转换成图显示出来
-      this.bpmnModeler.importXML(bpmnXmlStr, (err) => {
+      this.bpmnModeler.importXML(bpmnXmlStr, err => {
         if (err) {
           console.error(err)
         } else {
@@ -103,32 +103,32 @@ export default {
         canvas.zoom('fit-viewport')
       })
     },
-    success () {
-        console.log('创建成功!')
+    success() {
+      console.log('创建成功!')
     }
   },
-// 计算属性
+  // 计算属性
   computed: {}
 }
 </script>
 
 <style scoped>
 .loading {
-    font-size: 26px;
+  font-size: 26px;
 }
-.containers{
-	background-color: #ffffff;
-	width: 100%;
-	height: calc(100vh - 52px);
+.containers {
+  background-color: #ffffff;
+  width: 100%;
+  height: calc(100vh - 52px);
 }
-.canvas{
-	width: 100%;
-	height: 100%;
+.canvas {
+  width: 100%;
+  height: 100%;
 }
-.panel{
-	position: absolute;
-	right: 0;
-	top: 0;
-	width: 300px;
+.panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 300px;
 }
 </style>
